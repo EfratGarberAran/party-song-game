@@ -1,0 +1,89 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now())
+  events    Event[]
+  sessions  Session[]
+  SpotifyToken SpotifyToken?
+}
+
+model Session {
+  id        String   @id @default(cuid())
+  token     String   @unique
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expiresAt DateTime
+}
+
+model SpotifyToken {
+  id           String   @id @default(cuid())
+  userId       String   @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken  String
+  refreshToken String
+  expiresAt    DateTime
+  updatedAt    DateTime @updatedAt
+}
+
+model Event {
+  id            String    @id @default(cuid())
+  name          String
+  question      String
+  code          String    @unique
+  status        String    @default("collecting") // collecting | playing | ended
+  playlistUrl   String?
+  currentSongIndex Int     @default(0)
+  createdAt     DateTime  @default(now())
+  organizerId   String
+  organizer     User      @relation(fields: [organizerId], references: [id], onDelete: Cascade)
+  participants  Participant[]
+  playlistSongs PlaylistSong[]
+}
+
+model Participant {
+  id        String   @id @default(cuid())
+  eventId   String
+  event     Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  name      String
+  trackId   String
+  trackName String?
+  artistName String?
+  createdAt DateTime @default(now())
+  guesses   Guess[]  @relation("guesser")
+  playlistSong PlaylistSong?
+  guessesReceived Guess[] @relation("chosen")
+}
+
+model PlaylistSong {
+  id            String   @id @default(cuid())
+  eventId       String
+  event         Event    @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  participantId String   @unique
+  participant   Participant @relation(fields: [participantId], references: [id], onDelete: Cascade)
+  orderIndex    Int
+  trackId       String
+  trackName     String?
+  artistName    String?
+}
+
+model Guess {
+  id             String   @id @default(cuid())
+  eventId        String
+  guesserId      String
+  guesser        Participant @relation("guesser", fields: [guesserId], references: [id], onDelete: Cascade)
+  chosenId       String
+  chosen         Participant @relation("chosen", fields: [chosenId], references: [id], onDelete: Cascade)
+  songIndex      Int
+  correct        Boolean
+  createdAt      DateTime @default(now())
+}
