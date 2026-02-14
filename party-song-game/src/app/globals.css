@@ -1,0 +1,34 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply font-party antialiased;
+  }
+}
+
+[dir="rtl"] {
+  text-align: right;
+}
+
+[dir="ltr"] {
+  text-align: left;
+}
+
+/* Party-style inputs and buttons */
+.input-party {
+  @apply w-full rounded-2xl border-2 border-party-rose/40 bg-white/80 px-4 py-3 text-slate-800 placeholder-slate-400 transition focus:border-party-pink focus:outline-none focus:ring-2 focus:ring-party-pink/20;
+}
+
+.btn-party-primary {
+  @apply rounded-2xl bg-party-pink px-6 py-3 font-bold text-white shadow-party transition hover:bg-party-coral hover:shadow-party-lg hover:-translate-y-0.5 active:translate-y-0 disabled:opacity-50 disabled:hover:translate-y-0;
+}
+
+.btn-party-secondary {
+  @apply rounded-2xl border-2 border-party-pink/50 bg-white/90 px-6 py-3 font-bold text-party-pink transition hover:bg-party-rose/30 hover:border-party-pink;
+}
+
+.card-party {
+  @apply rounded-2xl bg-white/90 p-6 shadow-party backdrop-blur-sm;
+}

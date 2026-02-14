@@ -1,0 +1,82 @@
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+
+export default function SignupPage() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+  const router = useRouter();
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault();
+    setError("");
+    setLoading(true);
+    try {
+      const res = await fetch("/api/auth/signup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        setError(data.error || "Signup failed");
+        return;
+      }
+      router.push("/dashboard");
+      router.refresh();
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  return (
+    <main className="min-h-screen flex flex-col items-center justify-center p-6" dir="rtl">
+      <div className="card-party w-full max-w-sm">
+        <h1 className="text-2xl font-bold mb-6 text-party-pink">הרשמה</h1>
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {error && (
+            <p className="text-party-coral text-sm font-medium">{error}</p>
+          )}
+          <label className="flex flex-col gap-1">
+            <span className="text-sm font-medium text-slate-600">אימייל</span>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="input-party"
+            />
+          </label>
+          <label className="flex flex-col gap-1">
+            <span className="text-sm font-medium text-slate-600">סיסמה</span>
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              className="input-party"
+            />
+          </label>
+          <button
+            type="submit"
+            disabled={loading}
+            className="btn-party-primary mt-2"
+          >
+            {loading ? "נרשם..." : "הירשם"}
+          </button>
+        </form>
+        <p className="mt-6 text-center text-sm text-slate-600">
+          יש לך חשבון?{" "}
+          <Link href="/login" className="font-bold text-party-pink hover:text-party-coral">
+            התחבר
+          </Link>
+        </p>
+      </div>
+    </main>
+  );
+}
