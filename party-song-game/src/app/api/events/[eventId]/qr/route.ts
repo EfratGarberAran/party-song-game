@@ -20,6 +20,7 @@ export async function GET(
   }
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const url = `${baseUrl}/event/${event.code}`;
+  // Use toDataURL (no Buffer) so Vercel build succeeds
   const dataUrl = await QRCode.toDataURL(url, { width: 256, margin: 2 });
   const base64 = dataUrl.split(",")[1];
   if (!base64) return NextResponse.json({ error: "QR failed" }, { status: 500 });
