@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionUserId } from "@/lib/auth";
+import { getSessionUserIdForRequest } from "@/lib/auth";
 import { getSpotifyAuthUrl } from "@/lib/spotify";
 import { nanoid } from "nanoid";
 
 export async function GET(req: NextRequest) {
-  const userId = await getSessionUserId();
+  const userId = await getSessionUserIdForRequest(
+    req.headers.get("cookie"),
+    req.headers.get("x-party-session-token")
+  );
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

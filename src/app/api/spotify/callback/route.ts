@@ -30,6 +30,17 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(`${dashboardUrl}?spotify=error&spotify_error=invalid_state`);
   }
 
+  // וידוא שה-user קיים ב-DB (מונע שגיאת Foreign key)
+  const userExists = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { id: true },
+  });
+  if (!userExists) {
+    return NextResponse.redirect(
+      `${dashboardUrl}?spotify=error&spotify_error=user_not_found&spotify_message=המשתמש לא נמצא. נסי להתחבר מחדש לאתר ואז לחבר ספוטיפיי.`
+    );
+  }
+
   const redirectUri = `${origin}/api/spotify/callback`;
   try {
     const tokens = await exchangeCodeForTokens(code, redirectUri);
