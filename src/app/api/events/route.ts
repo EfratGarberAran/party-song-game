@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
   if (!userId) {
     const isForm = (req.headers.get("content-type") || "").includes("form");
     if (isForm) {
-      return NextResponse.redirect(new URL("/login?error=session", req.url));
+      return NextResponse.redirect(new URL("/login?error=session", req.url), 302);
     }
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
     },
   });
   if (contentType.includes("form")) {
-    return NextResponse.redirect(new URL(`/dashboard/event/${event.id}`, req.url));
+    return NextResponse.redirect(new URL(`/dashboard/event/${event.id}`, req.url), 302);
   }
   return NextResponse.json(event);
 }
