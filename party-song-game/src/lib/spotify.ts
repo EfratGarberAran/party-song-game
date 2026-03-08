@@ -2,17 +2,16 @@ const SPOTIFY_AUTH = "https://accounts.spotify.com/authorize";
 const SPOTIFY_TOKEN = "https://accounts.spotify.com/api/token";
 const SPOTIFY_API = "https://api.spotify.com/v1";
 
-const SCOPES = ["user-read-private", "playlist-modify-public", "playlist-modify-private"].join(" ");
+const SCOPES = "user-read-private playlist-modify-public playlist-modify-private";
 
 export function getSpotifyAuthUrl(redirectUri: string, state: string): string {
-  const params = new URLSearchParams({
-    client_id: process.env.SPOTIFY_CLIENT_ID!,
-    response_type: "code",
-    redirect_uri: redirectUri,
-    scope: SCOPES,
-    state,
-  });
-  return `${SPOTIFY_AUTH}?${params}`;
+  const params = new URLSearchParams();
+  params.set("client_id", process.env.SPOTIFY_CLIENT_ID!);
+  params.set("response_type", "code");
+  params.set("redirect_uri", redirectUri);
+  params.set("scope", SCOPES);
+  params.set("state", state);
+  return `${SPOTIFY_AUTH}?${params.toString()}`;
 }
 
 export async function exchangeCodeForTokens(
