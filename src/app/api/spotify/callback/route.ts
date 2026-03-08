@@ -9,6 +9,12 @@ export async function GET(req: NextRequest) {
   }
   const dashboardUrl = `${origin}/dashboard`;
 
+  const clientId = process.env.SPOTIFY_CLIENT_ID;
+  const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
+  if (!clientId || !clientSecret || clientId.includes("your-") || clientSecret.includes("your-")) {
+    return NextResponse.redirect(`${dashboardUrl}?spotify=error&spotify_error=missing_credentials`);
+  }
+
   const { searchParams } = new URL(req.url);
   const code = searchParams.get("code");
   const state = searchParams.get("state");
@@ -17,11 +23,11 @@ export async function GET(req: NextRequest) {
     return NextResponse.redirect(`${dashboardUrl}?spotify=denied`);
   }
   if (!code || !state) {
-    return NextResponse.redirect(`${dashboardUrl}?spotify=error`);
+    return NextResponse.redirect(`${dashboardUrl}?spotify=error&spotify_error=no_code_or_state`);
   }
   const userId = state.split(":")[0];
   if (!userId) {
-    return NextResponse.redirect(`${dashboardUrl}?spotify=error`);
+    return NextResponse.redirect(`${dashboardUrl}?spotify=error&spotify_error=invalid_state`);
   }
 
   const redirectUri = `${origin}/api/spotify/callback`;
