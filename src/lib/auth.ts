@@ -14,12 +14,25 @@ function getTokenFromCookieHeader(cookieHeader: string | null): string | null {
 
 export async function getSessionUserIdFromCookieHeader(cookieHeader: string | null): Promise<string | null> {
   const token = getTokenFromCookieHeader(cookieHeader);
+  return getSessionUserIdFromToken(token);
+}
+
+export async function getSessionUserIdFromToken(token: string | null): Promise<string | null> {
   if (!token) return null;
   const session = await prisma.session.findUnique({
     where: { token },
   });
   if (!session || session.expiresAt < new Date()) return null;
   return session.userId;
+}
+
+/** For API routes: try header (from middleware), then Cookie header, then cookies() */
+export async function getSessionUserIdForRequest(cookieHeader: string | null, headerToken: string | null): Promise<string | null> {
+  return (
+    (await getSessionUserIdFromToken(headerToken)) ??
+    (await getSessionUserIdFromCookieHeader(cookieHeader)) ??
+    (await getSessionUserId())
+  );
 }
 
 export async function hashPassword(password: string): Promise<string> {
