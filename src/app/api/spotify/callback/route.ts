@@ -52,9 +52,8 @@ export async function GET(req: NextRequest) {
   } catch (err) {
     console.error("Spotify callback error:", err);
     const msg = err instanceof Error ? err.message : String(err);
-    const spotifyError = getSpotifyErrorCode(msg);
+    let spotifyError = getSpotifyErrorCode(msg);
     const params = new URLSearchParams({ spotify: "error" });
-    if (spotifyError) params.set("spotify_error", spotifyError);
     try {
       const jsonMatch = msg.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
@@ -62,8 +61,16 @@ export async function GET(req: NextRequest) {
         if (obj.error_description) {
           params.set("spotify_message", obj.error_description.slice(0, 200));
         }
+        if (obj.error && !spotifyError) {
+          spotifyError = String(obj.error);
+          params.set("spotify_error", spotifyError);
+        }
       }
     } catch (_) {}
+    if (spotifyError) params.set("spotify_error", spotifyError);
+    if (!params.has("spotify_message") && msg) {
+      params.set("spotify_message", msg.slice(0, 200));
+    }
     return NextResponse.redirect(`${dashboardUrl}?${params.toString()}`);
   }
 }

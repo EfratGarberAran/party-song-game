@@ -21,11 +21,14 @@ export function SpotifyConnectionMessage() {
 
   useEffect(() => {
     if (!spotify || (!isOk && !isDenied && !isError)) return;
-    const cleanUrl = window.location.pathname;
-    const t = setTimeout(() => {
-      router.replace(cleanUrl, { scroll: false });
-    }, 15000);
-    return () => clearTimeout(t);
+    // מנקים את ה-URL רק בהצלחה או ביטול – בשגיאה משאירים כדי שהמשתמש יוכל לקרוא
+    if (!isError) {
+      const cleanUrl = window.location.pathname;
+      const t = setTimeout(() => {
+        router.replace(cleanUrl, { scroll: false });
+      }, 10000);
+      return () => clearTimeout(t);
+    }
   }, [spotify, router, isOk, isDenied, isError]);
 
   if (!mounted || !spotify) return null;

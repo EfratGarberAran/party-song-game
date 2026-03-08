@@ -24,5 +24,8 @@ export async function GET(
   if (!event) {
     return NextResponse.json({ error: "Not found" }, { status: 404 });
   }
-  return NextResponse.json(event);
+  const hasSpotifyToken = !!(await prisma.spotifyToken.findUnique({
+    where: { userId },
+  }));
+  return NextResponse.json({ ...event, hasSpotifyToken });
 }
