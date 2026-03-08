@@ -50,7 +50,7 @@ export async function GET(req: NextRequest) {
     const params = new URLSearchParams({ spotify: "error" });
     if (spotifyError) params.set("spotify_error", spotifyError);
     try {
-      const jsonMatch = msg.match(/\{.*\}/s);
+      const jsonMatch = msg.match(/\{[\s\S]*\}/);
       if (jsonMatch) {
         const obj = JSON.parse(jsonMatch[0]);
         if (obj.error_description) {
