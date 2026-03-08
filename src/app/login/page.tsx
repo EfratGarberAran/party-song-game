@@ -1,10 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, Suspense } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LoginPage() {
+function LoginForm() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -37,50 +37,58 @@ export default function LoginPage() {
   }
 
   return (
+    <div className="card-party w-full max-w-sm">
+      <h1 className="text-2xl font-bold mb-6 text-party-pink">התחברות</h1>
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {(error || sessionError) && (
+          <p className="text-party-coral text-sm font-medium">
+            {error || "ההתחברות פגה. התחברי שוב."}
+          </p>
+        )}
+        <label className="flex flex-col gap-1">
+          <span className="text-sm font-medium text-slate-600">אימייל</span>
+          <input
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="input-party"
+          />
+        </label>
+        <label className="flex flex-col gap-1">
+          <span className="text-sm font-medium text-slate-600">סיסמה</span>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            required
+            className="input-party"
+          />
+        </label>
+        <button
+          type="submit"
+          disabled={loading}
+          className="btn-party-primary mt-2"
+        >
+          {loading ? "מתחבר..." : "התחבר"}
+        </button>
+      </form>
+      <p className="mt-6 text-center text-sm text-slate-600">
+        אין לך חשבון?{" "}
+        <Link href="/signup" className="font-bold text-party-pink hover:text-party-coral">
+          הירשם
+        </Link>
+      </p>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
     <main className="min-h-screen flex flex-col items-center justify-center p-6" dir="rtl">
-      <div className="card-party w-full max-w-sm">
-        <h1 className="text-2xl font-bold mb-6 text-party-pink">התחברות</h1>
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {(error || sessionError) && (
-            <p className="text-party-coral text-sm font-medium">
-              {error || "ההתחברות פגה. התחברי שוב."}
-            </p>
-          )}
-          <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-slate-600">אימייל</span>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-              className="input-party"
-            />
-          </label>
-          <label className="flex flex-col gap-1">
-            <span className="text-sm font-medium text-slate-600">סיסמה</span>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="input-party"
-            />
-          </label>
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn-party-primary mt-2"
-          >
-            {loading ? "מתחבר..." : "התחבר"}
-          </button>
-        </form>
-        <p className="mt-6 text-center text-sm text-slate-600">
-          אין לך חשבון?{" "}
-          <Link href="/signup" className="font-bold text-party-pink hover:text-party-coral">
-            הירשם
-          </Link>
-        </p>
-      </div>
+      <Suspense fallback={<div className="card-party w-full max-w-sm animate-pulse h-64 rounded-2xl" />}>
+        <LoginForm />
+      </Suspense>
     </main>
   );
 }

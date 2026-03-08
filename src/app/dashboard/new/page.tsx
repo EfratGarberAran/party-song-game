@@ -1,8 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import Link from "next/link";
-import { useSearchParams } from "next/navigation";
 import { PRESET_QUESTIONS } from "@/lib/constants";
 
 const PRESET_KEYS = Object.keys(PRESET_QUESTIONS);
@@ -12,8 +10,6 @@ export default function NewEventPage() {
   const [question, setQuestion] = useState(PRESET_QUESTIONS.describe_you.he);
   const [customQuestion, setCustomQuestion] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const searchParams = useSearchParams();
-  const errorParam = searchParams.get("error");
 
   const useCustom = !!customQuestion.trim();
   const finalQuestion = useCustom ? customQuestion.trim() : question;
@@ -30,11 +26,6 @@ export default function NewEventPage() {
           dir="rtl"
           onSubmit={() => setSubmitting(true)}
         >
-          {errorParam === "session" && (
-            <p className="text-party-coral text-sm font-medium">
-              ההתחברות פגה. <Link href="/login" className="underline">התחברי שוב</Link>.
-            </p>
-          )}
           <label className="flex flex-col gap-1">
             <span className="text-sm font-medium text-slate-600">שם האירוע</span>
             <input
