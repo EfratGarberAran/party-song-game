@@ -20,9 +20,13 @@ export async function GET(
   }
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const url = `${baseUrl}/event/${event.code}`;
-  const pngBuffer = await QRCode.toBuffer(url, { width: 256, margin: 2 });
-  const body = new Uint8Array(pngBuffer);
-  return new NextResponse(body as BodyInit, {
+  const dataUrl = await QRCode.toDataURL(url, { width: 256, margin: 2 });
+  const base64 = dataUrl.split(",")[1];
+  if (!base64) return NextResponse.json({ error: "QR failed" }, { status: 500 });
+  const binary = atob(base64);
+  const bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new NextResponse(bytes, {
     headers: {
       "Content-Type": "image/png",
     },
