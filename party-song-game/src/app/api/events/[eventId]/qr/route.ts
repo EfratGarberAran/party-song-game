@@ -21,6 +21,7 @@ export async function GET(
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const url = `${baseUrl}/event/${event.code}`;
   const png = await QRCode.toBuffer(url, { width: 256, margin: 2 });
+  // Uint8Array for Vercel/Edge (Buffer not valid BodyInit)
   return new NextResponse(new Uint8Array(png), {
     headers: {
       "Content-Type": "image/png",
