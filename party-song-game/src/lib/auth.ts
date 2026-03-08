@@ -21,10 +21,11 @@ export async function createSession(userId: string): Promise<void> {
     data: { token, userId, expiresAt },
   });
   const cookieStore = await cookies();
+  const isProduction = process.env.NODE_ENV === "production";
   cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
-    sameSite: "lax",
+    secure: isProduction,
+    sameSite: isProduction ? "none" : "lax",
     maxAge: SESSION_MAX_AGE,
     path: "/",
   });

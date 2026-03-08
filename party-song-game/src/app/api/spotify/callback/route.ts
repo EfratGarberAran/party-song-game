@@ -28,10 +28,17 @@ export async function GET(req: NextRequest) {
   if (!code || !state) {
     return NextResponse.redirect(`${dashboardUrl}?spotify=error`);
   }
-  const userId = state.split(":")[0];
+  const stateParts = state.split("|");
+  const userId = stateParts.length >= 3 ? stateParts[0] : state.split(":")[0];
+  const redirectUriFromState = stateParts.length >= 3 ? decodeURIComponent(stateParts[2]) : null;
   if (!userId) {
     return NextResponse.redirect(`${dashboardUrl}?spotify=error&spotify_error=invalid_state`);
   }
+
+  // Use the exact redirect_uri from the auth request so it matches what Spotify has
+  const redirectUri = redirectUriFromState && redirectUriFromState.startsWith("http")
+    ? redirectUriFromState
+    : `${origin}/api/spotify/callback`;
 
   // Ensure the user in state matches current session (avoid stale state / wrong user)
   const sessionUserId = await getSessionUserId();
@@ -40,8 +47,6 @@ export async function GET(req: NextRequest) {
       `${dashboardUrl}?spotify=error&spotify_error=session_expired&spotify_message=ההתחברות פגה. היכנסי מחדש לאתר ולחצי שוב על התחבר לספוטיפיי.`
     );
   }
-
-  const redirectUri = `${origin}/api/spotify/callback`;
   try {
     const tokens = await exchangeCodeForTokens(code, redirectUri);
     const expiresAt = new Date(Date.now() + tokens.expires_in * 1000);

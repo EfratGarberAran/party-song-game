@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
+  const searchParams = useSearchParams();
+  const returnTo = searchParams.get("returnTo") || "/dashboard";
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -26,7 +29,8 @@ export default function LoginPage() {
         return;
       }
       // Full page navigation so the session cookie is definitely sent on the next request
-      window.location.href = "/dashboard";
+      const safeReturn = returnTo.startsWith("/") ? returnTo : "/dashboard";
+      window.location.href = safeReturn;
     } finally {
       setLoading(false);
     }

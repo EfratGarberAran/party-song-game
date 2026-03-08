@@ -6,7 +6,8 @@ import { nanoid } from "nanoid";
 export async function GET(req: NextRequest) {
   const userId = await getSessionUserId();
   if (!userId) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const origin = req.nextUrl.origin;
+    return NextResponse.redirect(`${origin}/login?returnTo=${encodeURIComponent("/dashboard")}`);
   }
   const clientId = process.env.SPOTIFY_CLIENT_ID;
   const clientSecret = process.env.SPOTIFY_CLIENT_SECRET;
@@ -26,7 +27,7 @@ export async function GET(req: NextRequest) {
     origin = origin.replace("localhost", "127.0.0.1");
   }
   const redirectUri = `${origin}/api/spotify/callback`;
-  const state = `${userId}:${nanoid(16)}`;
+  const state = `${userId}|${nanoid(16)}|${encodeURIComponent(redirectUri)}`;
   const url = getSpotifyAuthUrl(redirectUri, state);
   return NextResponse.redirect(url);
 }
