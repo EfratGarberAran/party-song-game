@@ -1,12 +1,15 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionUserId } from "@/lib/auth";
+import { getSessionUserIdForRequest } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 
 export async function GET(
-  _req: NextRequest,
+  req: NextRequest,
   { params }: { params: Promise<{ eventId: string }> }
 ) {
-  const userId = await getSessionUserId();
+  const userId = await getSessionUserIdForRequest(
+    req.headers.get("cookie"),
+    req.headers.get("x-party-session-token")
+  );
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }

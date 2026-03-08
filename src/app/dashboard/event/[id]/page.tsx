@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
@@ -10,7 +10,7 @@ export default async function EventDashboardPage({
   params: Promise<{ id: string }>;
 }) {
   const user = await getCurrentUser();
-  if (!user) return null;
+  if (!user) redirect("/login");
   const { id } = await params;
   const event = await prisma.event.findFirst({
     where: { id, organizerId: user.id },
@@ -19,7 +19,22 @@ export default async function EventDashboardPage({
       playlistSongs: { orderBy: { orderIndex: "asc" }, include: { participant: true } },
     },
   });
-  if (!event) notFound();
+
+  if (!event) {
+    return (
+      <div dir="rtl" className="space-y-6">
+        <div className="card-party">
+          <h2 className="text-xl font-bold text-slate-800 mb-2">האירוע לא נמצא</h2>
+          <p className="text-slate-600 mb-4">
+            ייתכן שהאירוע לא קיים או שאין לך גישה אליו. נסי לרענן את הדף או לחזור לרשימת האירועים.
+          </p>
+          <Link href="/dashboard" className="btn-party-primary inline-block">
+            חזרה לאירועים שלי
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
   const joinUrl = baseUrl + `/event/${event.code}`;
