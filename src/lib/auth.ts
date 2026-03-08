@@ -5,6 +5,23 @@ import bcrypt from "bcryptjs";
 const SESSION_COOKIE = "party_session";
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
 
+/** Parse session token from Cookie header (for API routes where cookies() may not see it) */
+function getTokenFromCookieHeader(cookieHeader: string | null): string | null {
+  if (!cookieHeader) return null;
+  const match = cookieHeader.match(new RegExp(`${SESSION_COOKIE}=([^;]+)`));
+  return match ? match[1].trim() : null;
+}
+
+export async function getSessionUserIdFromCookieHeader(cookieHeader: string | null): Promise<string | null> {
+  const token = getTokenFromCookieHeader(cookieHeader);
+  if (!token) return null;
+  const session = await prisma.session.findUnique({
+    where: { token },
+  });
+  if (!session || session.expiresAt < new Date()) return null;
+  return session.userId;
+}
+
 export async function hashPassword(password: string): Promise<string> {
   return bcrypt.hash(password, 10);
 }

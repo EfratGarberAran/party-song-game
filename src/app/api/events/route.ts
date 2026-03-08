@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getSessionUserId } from "@/lib/auth";
+import { getSessionUserId, getSessionUserIdFromCookieHeader } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import { nanoid } from "nanoid";
 
-export async function GET() {
-  const userId = await getSessionUserId();
+export async function GET(req: NextRequest) {
+  let userId = await getSessionUserId();
+  if (!userId) {
+    userId = await getSessionUserIdFromCookieHeader(req.headers.get("cookie"));
+  }
   if (!userId) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
@@ -19,7 +22,10 @@ export async function GET() {
 }
 
 export async function POST(req: NextRequest) {
-  const userId = await getSessionUserId();
+  let userId = await getSessionUserId();
+  if (!userId) {
+    userId = await getSessionUserIdFromCookieHeader(req.headers.get("cookie"));
+  }
   if (!userId) {
     const isForm = (req.headers.get("content-type") || "").includes("form");
     if (isForm) {
