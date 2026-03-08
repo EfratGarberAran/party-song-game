@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { exchangeCodeForTokens } from "@/lib/spotify";
 import { prisma } from "@/lib/db";
+import { getSessionUserId } from "@/lib/auth";
 
 export async function GET(req: NextRequest) {
   let origin = req.nextUrl.origin;
@@ -13,15 +14,31 @@ export async function GET(req: NextRequest) {
   const code = searchParams.get("code");
   const state = searchParams.get("state");
   const error = searchParams.get("error");
+  const errorDescription = searchParams.get("error_description");
   if (error) {
-    return NextResponse.redirect(`${dashboardUrl}?spotify=denied`);
+    if (error === "access_denied") {
+      return NextResponse.redirect(`${dashboardUrl}?spotify=denied`);
+    }
+    const params = new URLSearchParams({ spotify: "error" });
+    const codeFromError = getSpotifyErrorCode(errorDescription ?? error);
+    if (codeFromError) params.set("spotify_error", codeFromError);
+    if (errorDescription) params.set("spotify_message", errorDescription.slice(0, 200));
+    return NextResponse.redirect(`${dashboardUrl}?${params.toString()}`);
   }
   if (!code || !state) {
     return NextResponse.redirect(`${dashboardUrl}?spotify=error`);
   }
   const userId = state.split(":")[0];
   if (!userId) {
-    return NextResponse.redirect(`${dashboardUrl}?spotify=error`);
+    return NextResponse.redirect(`${dashboardUrl}?spotify=error&spotify_error=invalid_state`);
+  }
+
+  // Ensure the user in state matches current session (avoid stale state / wrong user)
+  const sessionUserId = await getSessionUserId();
+  if (!sessionUserId || sessionUserId !== userId) {
+    return NextResponse.redirect(
+      `${dashboardUrl}?spotify=error&spotify_error=session_expired&spotify_message=ההתחברות פגה. היכנסי מחדש לאתר ולחצי שוב על התחבר לספוטיפיי.`
+    );
   }
 
   const redirectUri = `${origin}/api/spotify/callback`;
@@ -62,9 +79,12 @@ export async function GET(req: NextRequest) {
   }
 }
 
-function getSpotifyErrorCode(message: string): string {
-  if (message.includes("redirect_uri_mismatch")) return "redirect_uri_mismatch";
-  if (message.includes("invalid_client")) return "invalid_client";
-  if (message.includes("invalid_grant")) return "invalid_grant";
+function getSpotifyErrorCode(message: string | null): string {
+  if (!message) return "";
+  const m = message.toLowerCase();
+  if (m.includes("redirect_uri_mismatch")) return "redirect_uri_mismatch";
+  if (m.includes("invalid_client")) return "invalid_client";
+  if (m.includes("invalid_grant")) return "invalid_grant";
+  if (m.includes("user_not_found") || m.includes("user not found")) return "user_not_found";
   return "";
 }

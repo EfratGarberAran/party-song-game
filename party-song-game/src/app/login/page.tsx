@@ -2,14 +2,12 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -20,14 +18,15 @@ export default function LoginPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
+        credentials: "include",
       });
       const data = await res.json();
       if (!res.ok) {
         setError(data.error || "Login failed");
         return;
       }
-      router.push("/dashboard");
-      router.refresh();
+      // Full page navigation so the session cookie is definitely sent on the next request
+      window.location.href = "/dashboard";
     } finally {
       setLoading(false);
     }

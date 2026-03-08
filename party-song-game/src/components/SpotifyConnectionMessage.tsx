@@ -51,6 +51,8 @@ export function SpotifyConnectionMessage() {
     const isInvalidClient = spotifyError === "invalid_client";
     const isMissingCredentials = spotifyError === "missing_credentials";
     const isInvalidGrant = spotifyError === "invalid_grant";
+    const isUserNotFound = spotifyError === "user_not_found";
+    const isSessionExpired = spotifyError === "session_expired";
     const callbackUri =
       typeof window !== "undefined"
         ? `${window.location.origin}/api/spotify/callback`
@@ -80,7 +82,11 @@ export function SpotifyConnectionMessage() {
                 "חסרים SPOTIFY_CLIENT_ID או SPOTIFY_CLIENT_SECRET – הוספי אותם ל־.env."}
               {isInvalidGrant &&
                 "הקוד פג תוקף או כבר נוצל – נסי שוב מלחיצה על התחבר לספוטיפיי."}
-              {!["redirect_uri_mismatch", "invalid_client", "missing_credentials", "invalid_grant"].includes(
+              {isUserNotFound &&
+                "המשתמש לא נמצא – וודאי ש־Redirect URI בדשבורד של ספוטיפיי תואם בדיוק לכתובת האתר (כולל https והדומיין). נסי להתחבר מחדש לאתר ואז לחבר ספוטיפיי."}
+              {isSessionExpired &&
+                "ההתחברות לאתר פגה – היכנסי מחדש לאתר ולחצי שוב על התחבר לספוטיפיי."}
+              {!["redirect_uri_mismatch", "invalid_client", "missing_credentials", "invalid_grant", "user_not_found", "session_expired"].includes(
                 spotifyError
               ) && spotifyError}
             </span>

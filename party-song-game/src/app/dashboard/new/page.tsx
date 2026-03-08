@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { PRESET_QUESTIONS } from "@/lib/constants";
+import { createEventAction } from "./actions";
 
 const PRESET_KEYS = Object.keys(PRESET_QUESTIONS);
 
@@ -22,18 +23,18 @@ export default function NewEventPage() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("/api/events", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: name.trim(), question: finalQuestion }),
-      });
-      if (!res.ok) {
-        const data = await res.json();
-        setError(data.error || "שגיאה");
+      const formData = new FormData();
+      formData.set("name", name.trim());
+      formData.set("question", finalQuestion);
+      const result = await createEventAction(formData);
+      if (result?.error) {
+        setError(result.error);
         return;
       }
-      const event = await res.json();
-      router.push(`/dashboard/event/${event.id}`);
+      if (result?.eventId) {
+        router.push(`/dashboard/event/${result.eventId}`);
+        return;
+      }
       router.refresh();
     } finally {
       setLoading(false);
