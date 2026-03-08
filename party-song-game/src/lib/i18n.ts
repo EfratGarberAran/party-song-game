@@ -4,7 +4,7 @@ export const defaultLocale: Locale = "he";
 
 export const messages: Record<Locale, Record<string, string>> = {
   he: {
-    "app.title": "משחק שירים במסיבה",
+    "app.title": "Party Shuffle",
     "nav.login": "התחברות",
     "nav.signup": "הרשמה",
     "nav.logout": "יציאה",
@@ -45,7 +45,7 @@ export const messages: Record<Locale, Record<string, string>> = {
     "leaderboard.rank": "מקום",
   },
   en: {
-    "app.title": "Party Song Game",
+    "app.title": "Party Shuffle",
     "nav.login": "Log in",
     "nav.signup": "Sign up",
     "nav.logout": "Log out",

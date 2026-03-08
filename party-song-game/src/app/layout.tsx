@@ -10,8 +10,8 @@ const nunito = Nunito({
 });
 
 export const metadata: Metadata = {
-  title: "Party Song Game | משחק שירים במסיבה",
-  description: "משחק שירים במסיבות – אירועים חברתיים אינטראקטיביים",
+  title: "Party Shuffle",
+  description: "Everyone picks a song. Guess who picked what.",
 };
 
 export default function RootLayout({

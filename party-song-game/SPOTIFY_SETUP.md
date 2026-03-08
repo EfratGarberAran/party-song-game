@@ -7,7 +7,7 @@
 1. היכנסי ל־[Spotify Developer Dashboard](https://developer.spotify.com/dashboard) והתחברי עם חשבון הספוטיפיי שלך.
 2. לחצי **"Create app"** (כפתור סגול).
 3. במסך ההגדרות מלאי:
-   - **App name** – כל שם (למשל `Party Song Game`).
+   - **App name** – כל שם (למשל `Party Shuffle`).
    - **App description** – אופציונלי.
    - **Redirect URI** – **חשוב:** מספוטיפיי 2025 מותר רק כתובת מאובטחת. לפיתוח מקומי יש להשתמש ב־**127.0.0.1** (לא localhost). לחצי "Add" והדביקי **בדיוק**:
      ```

@@ -2,11 +2,20 @@
 
 המדריך מניח שאת מתחילה מאפס. כל שלב מסומן במספר – עברי לפי הסדר.
 
+**סדר הפריסה (בקצרה):**
+1. **חלק א׳** – פרויקט ב-Railway + PostgreSQL, מעתיקים `DATABASE_URL`
+2. **חלק ב׳** – חיבור הריפו מ-GitHub (party-song-game) ל-Railway
+3. **חלק ג׳** – Variables: `DATABASE_URL`, `NEXTAUTH_SECRET`, `SPOTIFY_CLIENT_ID`, `SPOTIFY_CLIENT_SECRET`
+4. **חלק ד׳** – בטרמינל: `DATABASE_URL="..." npx prisma db push` (יצירת הטבלאות)
+5. **חלק ה׳** – Generate Domain ב-Railway, הוספת `NEXT_PUBLIC_APP_URL`
+6. **חלק ו׳** – ב-Spotify Dashboard: הוספת Redirect URI לכתובת החדשה
+
 ---
 
 ## לפני שמתחילים – מה צריך להיות מוכן
 
-1. **הקוד ב-GitHub** (פעם אחת)
+1. **הקוד ב-GitHub** (פעם אחת)  
+   **אם כבר דחפת ל־EfratGarberAran/party-song-game – דלגי לשלב 2.**
    - **בטרמינל:** פתחי טרמינל **בתיקיית הפרויקט** `party-song-game` והריצי:
      ```bash
      bash scripts/setup-git.sh
@@ -193,7 +202,7 @@
 
 - **האתר לא נטען / 502:** חכי 2–3 דקות אחרי ה-build ונסי שוב. בדקי ב-**Deployments** או **Logs** שאין שגיאות.
 - **"התחבר לספוטיפיי" לא עובד:** וודאי שהוספת ב-Spotify את ה-Redirect URI **בדיוק** כמו ב־`NEXT_PUBLIC_APP_URL` + `/api/spotify/callback`, ושמרת.
-- **שגיאה על מסד נתונים:** וודאי שהרצת `npx prisma db push` עם ה־DATABASE_URL של Railway (חלק ד׳),משתנה `DATABASE_URL` מוגדר ב-Variables של **האפליקציה** (לא רק של PostgreSQL).
+- **שגיאה על מסד נתונים:** וודאי שהרצת `npx prisma db push` עם ה־DATABASE_URL של Railway (חלק ד׳), ומשתנה `DATABASE_URL` מוגדר ב-Variables של **האפליקציה** (לא רק של PostgreSQL).
 
 ---
 

@@ -37,7 +37,7 @@ export function EventDashboardClient({
   async function reconnectSpotify() {
     setSpotifyError("");
     try {
-      await fetch("/api/spotify/disconnect", { method: "POST" });
+      await fetch("/api/spotify/disconnect", { method: "POST", credentials: "include" });
       connectSpotify();
     } catch {
       setSpotifyError("לא הצלחנו להתנתק. נסי לרענן את הדף.");
@@ -50,6 +50,7 @@ export function EventDashboardClient({
     try {
       const res = await fetch(`/api/events/${eventId}/create-playlist`, {
         method: "POST",
+        credentials: "include",
       });
       if (!res.ok) {
         let msg = "שגיאה ביצירת הפלייליסט";
@@ -69,12 +70,12 @@ export function EventDashboardClient({
   }
 
   async function nextSong() {
-    await fetch(`/api/events/${eventId}/next-song`, { method: "POST" });
+    await fetch(`/api/events/${eventId}/next-song`, { method: "POST", credentials: "include" });
     window.location.reload();
   }
 
   async function endEvent() {
-    await fetch(`/api/events/${eventId}/end`, { method: "POST" });
+    await fetch(`/api/events/${eventId}/end`, { method: "POST", credentials: "include" });
     window.location.reload();
   }
 

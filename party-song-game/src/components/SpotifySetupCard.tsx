@@ -18,7 +18,7 @@ export function SpotifySetupCard() {
           ולחצי <strong>Create app</strong>.
         </li>
         <li>
-          מלאי שם אפליקציה (למשל Party Song Game). ב־<strong>Redirect URI</strong> – ספוטיפיי לא מאפשרים יותר <code className="bg-white/80 px-1 rounded">localhost</code>; יש להשתמש ב־<strong>127.0.0.1</strong>. הוסיפי <strong>בדיוק</strong>:
+          מלאי שם אפליקציה (למשל Party Shuffle). ב־<strong>Redirect URI</strong> – ספוטיפיי לא מאפשרים יותר <code className="bg-white/80 px-1 rounded">localhost</code>; יש להשתמש ב־<strong>127.0.0.1</strong>. הוסיפי <strong>בדיוק</strong>:
           <code className="block mt-1 p-2 rounded-lg bg-white/80 text-xs break-all border border-party-pink/20">
             http://127.0.0.1:3000/api/spotify/callback
           </code>

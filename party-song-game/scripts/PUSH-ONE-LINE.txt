@@ -1,0 +1,24 @@
+Run these commands one by one in Terminal (or copy all and paste).
+
+cd /Users/efrataram/party-song-game
+
+rm -rf /tmp/party-push
+git clone https://github.com/EfratGarberAran/party-song-game.git /tmp/party-push
+cd /tmp/party-push
+rm -rf *
+git checkout -b main
+
+for f in /Users/efrataram/party-song-game/*; do
+  n=$(basename "$f")
+  [ "$n" = "node_modules" ] && continue
+  [ "$n" = ".next" ] && continue
+  [ "$n" = ".git" ] && continue
+  cp -r "$f" .
+done
+cp /Users/efrataram/party-song-game/.gitignore /Users/efrataram/party-song-game/.env.example . 2>/dev/null || true
+
+git add -A
+git commit -m "Party Song Game - full project"
+git push -u origin main
+
+echo "Done! Check https://github.com/EfratGarberAran/party-song-game"

@@ -1,5 +1,6 @@
-# Party Song Game
+# Party Shuffle
 
+Everyone picks a song. Guess who picked what.  
 משחק שירים במסיבות – אירועים חברתיים אינטראקטיביים עם בחירת שירים, פלייליסט בספוטיפיי וניחוש "מי בחר".
 
 ## Features

@@ -1,4 +1,4 @@
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getCurrentUser } from "@/lib/auth";
 import { prisma } from "@/lib/db";
 import Link from "next/link";
@@ -10,7 +10,7 @@ export default async function EventDashboardPage({
   params: Promise<{ id: string }>;
 }) {
   const user = await getCurrentUser();
-  if (!user) return null;
+  if (!user) redirect("/login");
   const { id } = await params;
   const event = await prisma.event.findFirst({
     where: { id, organizerId: user.id },
