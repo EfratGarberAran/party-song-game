@@ -21,7 +21,9 @@ export async function createSession(userId: string): Promise<void> {
     data: { token, userId, expiresAt },
   });
   const cookieStore = await cookies();
-  const isProduction = process.env.NODE_ENV === "production";
+  // On Vercel use SameSite=None so cookie is sent when returning from Spotify (cross-site redirect)
+  const isProduction =
+    process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
   cookieStore.set(SESSION_COOKIE, token, {
     httpOnly: true,
     secure: isProduction,
