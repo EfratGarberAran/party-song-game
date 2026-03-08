@@ -89,3 +89,25 @@ export async function logout() {
   }
   cookieStore.delete(SESSION_COOKIE);
 }
+
+const CREATE_EVENT_TOKEN_MAX_AGE_SEC = 60 * 10; // 10 minutes
+
+export async function createOneTimeEventToken(userId: string): Promise<string> {
+  const { nanoid } = await import("nanoid");
+  const token = nanoid(32);
+  const expiresAt = new Date(Date.now() + CREATE_EVENT_TOKEN_MAX_AGE_SEC * 1000);
+  await prisma.createEventToken.create({
+    data: { token, userId, expiresAt },
+  });
+  return token;
+}
+
+export async function consumeOneTimeEventToken(token: string | null): Promise<string | null> {
+  if (!token) return null;
+  const row = await prisma.createEventToken.findUnique({
+    where: { token },
+  });
+  if (!row || row.expiresAt < new Date()) return null;
+  await prisma.createEventToken.delete({ where: { token } });
+  return row.userId;
+}
