@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LoginPage() {
   const [email, setEmail] = useState("");
@@ -10,6 +10,8 @@ export default function LoginPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const sessionError = searchParams.get("error") === "session";
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -39,8 +41,10 @@ export default function LoginPage() {
       <div className="card-party w-full max-w-sm">
         <h1 className="text-2xl font-bold mb-6 text-party-pink">התחברות</h1>
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {error && (
-            <p className="text-party-coral text-sm font-medium">{error}</p>
+          {(error || sessionError) && (
+            <p className="text-party-coral text-sm font-medium">
+              {error || "ההתחברות פגה. התחברי שוב."}
+            </p>
           )}
           <label className="flex flex-col gap-1">
             <span className="text-sm font-medium text-slate-600">אימייל</span>
