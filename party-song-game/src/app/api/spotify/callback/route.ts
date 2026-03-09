@@ -16,6 +16,11 @@ export async function GET(req: NextRequest) {
   const error = searchParams.get("error");
   const errorDescription = searchParams.get("error_description");
   if (error) {
+    console.error("[Spotify callback] Spotify redirected with error:", {
+      error,
+      error_description: errorDescription,
+      fullUrl: req.url,
+    });
     if (error === "access_denied") {
       return NextResponse.redirect(`${dashboardUrl}?spotify=denied`);
     }
@@ -66,8 +71,11 @@ export async function GET(req: NextRequest) {
     });
     return NextResponse.redirect(`${dashboardUrl}?spotify=ok`);
   } catch (err) {
-    console.error("Spotify callback error:", err);
     const msg = err instanceof Error ? err.message : String(err);
+    console.error("[Spotify callback] Token exchange failed:", {
+      message: msg,
+      redirectUriUsed: redirectUri,
+    });
     const spotifyError = getSpotifyErrorCode(msg);
     const params = new URLSearchParams({ spotify: "error" });
     if (spotifyError) params.set("spotify_error", spotifyError);

@@ -29,5 +29,10 @@ export async function GET(req: NextRequest) {
   const redirectUri = `${origin}/api/spotify/callback`;
   const state = `${userId}|${nanoid(16)}|${encodeURIComponent(redirectUri)}`;
   const url = getSpotifyAuthUrl(redirectUri, state);
+  console.log("[Spotify auth] Redirecting to Spotify with", {
+    redirectUri,
+    scope: "user-read-private playlist-modify-public playlist-modify-private",
+    statePrefix: state.slice(0, 30) + "...",
+  });
   return NextResponse.redirect(url);
 }

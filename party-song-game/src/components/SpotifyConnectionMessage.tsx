@@ -83,7 +83,7 @@ export function SpotifyConnectionMessage() {
               {isInvalidGrant &&
                 "הקוד פג תוקף או כבר נוצל – נסי שוב מלחיצה על התחבר לספוטיפיי."}
               {isUserNotFound &&
-                "המשתמש לא נמצא – וודאי ש־Redirect URI בדשבורד של ספוטיפיי תואם בדיוק לכתובת האתר (כולל https והדומיין). נסי להתחבר מחדש לאתר ואז לחבר ספוטיפיי."}
+                "המשתמש לא נמצא – וודאי שמתחברים לספוטיפיי עם אותו חשבון שמופיע ב־User Management בדשבורד (אותו אימייל). וודאי ש־Redirect URI בדשבורד תואם בדיוק לכתובת האתר."}
               {isSessionExpired &&
                 "ההתחברות לאתר פגה – היכנסי מחדש לאתר ולחצי שוב על התחבר לספוטיפיי."}
               {!["redirect_uri_mismatch", "invalid_client", "missing_credentials", "invalid_grant", "user_not_found", "session_expired"].includes(

@@ -21,6 +21,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   const userId = await getSessionUserId();
   if (!userId) {
+    console.log("[events POST] Unauthorized: no session (cookie missing or expired)");
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
   const { name, question } = await req.json();
