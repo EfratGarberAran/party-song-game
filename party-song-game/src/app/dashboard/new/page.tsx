@@ -2,8 +2,8 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 import { PRESET_QUESTIONS } from "@/lib/constants";
-import { createEventAction } from "./actions";
 
 const PRESET_KEYS = Object.keys(PRESET_QUESTIONS);
 
@@ -23,16 +23,26 @@ export default function NewEventPage() {
     setError("");
     setLoading(true);
     try {
-      const formData = new FormData();
-      formData.set("name", name.trim());
-      formData.set("question", finalQuestion);
-      const result = await createEventAction(formData);
-      if (result?.error) {
-        setError(result.error);
+      const res = await fetch("/api/events", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({
+          name: name.trim(),
+          question: finalQuestion,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        if (res.status === 401) {
+          setError("ההתחברות פגה. היכנסי מחדש לדף ההתחברות.");
+          return;
+        }
+        setError(data.error || "אירעה שגיאה");
         return;
       }
-      if (result?.eventId) {
-        router.push(`/dashboard/event/${result.eventId}`);
+      if (data?.id) {
+        router.push(`/dashboard/event/${data.id}`);
         return;
       }
       router.refresh();
@@ -47,7 +57,19 @@ export default function NewEventPage() {
       <p className="text-slate-600 mb-6">בחרי שאלה והתחילי לאסוף שירים</p>
       <div className="card-party">
         <form onSubmit={handleSubmit} className="flex flex-col gap-4" dir="rtl">
-          {error && <p className="text-party-coral text-sm font-medium">{error}</p>}
+          {error && (
+            <div className="flex flex-col gap-1">
+              <p className="text-party-coral text-sm font-medium">{error}</p>
+              {error.includes("ההתחברות פגה") && (
+                <Link
+                  href="/login?returnTo=/dashboard/new"
+                  className="text-sm font-bold text-party-pink hover:text-party-coral"
+                >
+                  מעבר להתחברות →
+                </Link>
+              )}
+            </div>
+          )}
           <label className="flex flex-col gap-1">
             <span className="text-sm font-medium text-slate-600">שם האירוע</span>
             <input
